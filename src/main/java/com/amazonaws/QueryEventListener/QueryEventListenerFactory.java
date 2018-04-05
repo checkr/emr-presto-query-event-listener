@@ -16,18 +16,16 @@ package com.amazonaws.QueryEventListener;
 
 import com.facebook.presto.spi.eventlistener.EventListener;
 import com.facebook.presto.spi.eventlistener.EventListenerFactory;
+
 import java.util.Map;
 
 public class QueryEventListenerFactory
-        implements EventListenerFactory
-{
-    public String getName()
-    {
+        implements EventListenerFactory {
+    public String getName() {
         return "event-listener";
     }
 
-    public EventListener create(Map<String, String> config)
-    {
+    public EventListener create(Map<String, String> config) {
         return new QueryEventListener(config);
     }
 

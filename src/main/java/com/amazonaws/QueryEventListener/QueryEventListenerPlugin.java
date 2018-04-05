@@ -16,14 +16,13 @@ package com.amazonaws.QueryEventListener;
 
 import com.facebook.presto.spi.Plugin;
 import com.facebook.presto.spi.eventlistener.EventListenerFactory;
+
 import java.util.*;
 
 public class QueryEventListenerPlugin
-        implements Plugin
-{
+        implements Plugin {
 
-    public Iterable<EventListenerFactory> getEventListenerFactories()
-    {
+    public Iterable<EventListenerFactory> getEventListenerFactories() {
         EventListenerFactory listenerFactory = new QueryEventListenerFactory();
         List<EventListenerFactory> listenerFactoryList = new ArrayList<EventListenerFactory>();
         listenerFactoryList.add(listenerFactory);
