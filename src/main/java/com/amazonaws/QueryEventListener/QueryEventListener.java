@@ -14,232 +14,107 @@
 
 package com.amazonaws.QueryEventListener;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
-import com.facebook.presto.spi.eventlistener.EventListener;
-import com.facebook.presto.spi.eventlistener.QueryCompletedEvent;
-import com.facebook.presto.spi.eventlistener.QueryCreatedEvent;
-import com.facebook.presto.spi.eventlistener.SplitCompletedEvent;
+import com.facebook.presto.spi.eventlistener.*;
+import org.json.JSONObject;
 
-public class QueryEventListener
-        implements EventListener
-{
+public class QueryEventListener implements EventListener {
     Logger logger;
-    FileHandler fh;
-    final String loggerName = "QueryLog";
 
-    public QueryEventListener()
-    {
-
-        createLogFile();
-
+    public QueryEventListener() {
+        createLogger();
     }
 
-    public QueryEventListener(Map<String, String> config)
-    {
-
-        createLogFile();
-
+    public QueryEventListener(Map<String, String> config) {
+        createLogger();
     }
 
-    public void queryCreated(QueryCreatedEvent queryCreatedEvent)
-    {
-
-        StringBuilder msg = new StringBuilder();
-
+    public void queryCreated(QueryCreatedEvent queryCreatedEvent) {
+        JSONObject jsonString = new JSONObject();
+        jsonString.put("Logger", "QueryEventListener");
         try {
-
-            msg.append("---------------Query Created----------------------------");
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Query ID: ");
-            msg.append(queryCreatedEvent.getMetadata().getQueryId().toString());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Query State: ");
-            msg.append(queryCreatedEvent.getMetadata().getQueryState().toString());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("User: ");
-            msg.append(queryCreatedEvent.getContext().getUser().toString());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Create Time: ");
-            msg.append(queryCreatedEvent.getCreateTime());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Principal: ");
-            msg.append(queryCreatedEvent.getContext().getPrincipal());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Remote Client Address: ");
-            msg.append(queryCreatedEvent.getContext().getRemoteClientAddress());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Source: ");
-            msg.append(queryCreatedEvent.getContext().getSource());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("User Agent: ");
-            msg.append(queryCreatedEvent.getContext().getUserAgent());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Catalog: ");
-            msg.append(queryCreatedEvent.getContext().getCatalog());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Schema: ");
-            msg.append(queryCreatedEvent.getContext().getSchema());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Server Address: ");
-            msg.append(queryCreatedEvent.getContext().getServerAddress());
-
-            logger.info(msg.toString());
+            jsonString.put("EventType", "QueryCreate");
+            jsonString.put("QueryId", queryCreatedEvent.getMetadata().getQueryId().toString());
+            jsonString.put("QueryState", queryCreatedEvent.getMetadata().getQueryState().toString());
+            jsonString.put("CreateTime", queryCreatedEvent.getCreateTime());
+            jsonString.put("User", queryCreatedEvent.getContext().getUser().toString());
+            jsonString.put("RemoteClientAddress", queryCreatedEvent.getContext().getRemoteClientAddress());
+            jsonString.put("Principal", queryCreatedEvent.getContext().getPrincipal());
+            jsonString.put("Source", queryCreatedEvent.getContext().getSource());
+            jsonString.put("UserAgent", queryCreatedEvent.getContext().getUserAgent());
+            jsonString.put("source", queryCreatedEvent.getContext().getSource());
+            jsonString.put("Catelog", queryCreatedEvent.getContext().getCatalog());
+            jsonString.put("Schema", queryCreatedEvent.getContext().getSchema());
+            jsonString.put("ServerAddress", queryCreatedEvent.getContext().getServerAddress());
+            logger.info(jsonString.toString());
+        } catch (Exception ex) {
+            jsonString.put("exception", ex.getMessage());
+            logger.info(jsonString.toString());
         }
-        catch (Exception ex) {
-
-            logger.info(ex.getMessage());
-        }
-
     }
 
-    public void queryCompleted(QueryCompletedEvent queryCompletedEvent)
-    {
-
-        String errorCode = null;
-        StringBuilder msg = new StringBuilder();
-
+    public void queryCompleted(QueryCompletedEvent queryCompletedEvent) {
+        JSONObject jsonString = new JSONObject();
+        jsonString.put("Logger", "QueryEventListener");
         try {
-            errorCode = queryCompletedEvent.getFailureInfo().get().getErrorCode().getName().toString();
-        }
-        catch (NoSuchElementException noElEx) {
-            errorCode = null;
-        }
-
-        try {
-
-            if (errorCode != null) {
-
-                msg.append("---------------Query Completed----------------------------");
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Query ID: ");
-                msg.append(queryCompletedEvent.getMetadata().getQueryId().toString());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Create Time: ");
-                msg.append(queryCompletedEvent.getCreateTime());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("User: ");
-                msg.append(queryCompletedEvent.getContext().getUser().toString());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Complete: ");
-                msg.append(queryCompletedEvent.getStatistics().isComplete());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Query Failure Error: ");
-                msg.append(errorCode);
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Remote Client Address: ");
-                msg.append(queryCompletedEvent.getContext().getRemoteClientAddress().toString());
-
-                logger.info(msg.toString());
-
+            jsonString.put("EventType", "QueryComplete");
+            jsonString.put("QueryId", queryCompletedEvent.getMetadata().getQueryId().toString());
+            jsonString.put("CreateTime", queryCompletedEvent.getCreateTime());
+            jsonString.put("User", queryCompletedEvent.getContext().getUser().toString());
+            jsonString.put("Complete", queryCompletedEvent.getStatistics().isComplete());
+            jsonString.put("RemoteClientAddress", queryCompletedEvent.getContext().getRemoteClientAddress());
+            jsonString.put("Query", queryCompletedEvent.getMetadata().getQuery());
+            jsonString.put("Uri", queryCompletedEvent.getMetadata().getUri().toString());
+            jsonString.put("state", queryCompletedEvent.getMetadata().getQueryState());
+            jsonString.put("CpuTime", queryCompletedEvent.getStatistics().getCpuTime().toMillis());
+            jsonString.put("WallTime", queryCompletedEvent.getStatistics().getWallTime().toMillis());
+            jsonString.put("QueuedTime", queryCompletedEvent.getStatistics().getQueuedTime().toMillis());
+            if(queryCompletedEvent.getStatistics().getAnalysisTime().isPresent()) {
+                jsonString.put("AnalysisTime", queryCompletedEvent.getStatistics().getAnalysisTime().get().toMillis());
             }
-            else {
-
-                msg.append("---------------Query Completed----------------------------");
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Query ID: ");
-                msg.append(queryCompletedEvent.getMetadata().getQueryId().toString());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Create Time: ");
-                msg.append(queryCompletedEvent.getCreateTime());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("User: ");
-                msg.append(queryCompletedEvent.getContext().getUser().toString());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Complete: ");
-                msg.append(queryCompletedEvent.getStatistics().isComplete());
-                msg.append("\n");
-                msg.append("     ");
-                msg.append("Remote Client Address: ");
-                msg.append(queryCompletedEvent.getContext().getRemoteClientAddress().toString());
-
-                logger.info(msg.toString());
+            if(queryCompletedEvent.getStatistics().getDistributedPlanningTime().isPresent()) {
+                jsonString.put("DistributedPlanningTime", queryCompletedEvent.getStatistics().getDistributedPlanningTime().get().toMillis());
             }
-        }
-        catch (Exception ex) {
-            logger.info(ex.getMessage());
+            jsonString.put("PeakMemoryBytes", queryCompletedEvent.getStatistics().getPeakMemoryBytes());
+            jsonString.put("TotalBytes", queryCompletedEvent.getStatistics().getTotalBytes());
+            jsonString.put("TotalRows", queryCompletedEvent.getStatistics().getTotalRows());
+            jsonString.put("CompletedSplits", queryCompletedEvent.getStatistics().getCompletedSplits());
+            if(queryCompletedEvent.getFailureInfo().isPresent()) {
+                QueryFailureInfo queryFailureInfo = queryCompletedEvent.getFailureInfo().get();
+                jsonString.put("errorCode", queryFailureInfo.getErrorCode());
+                jsonString.put("failureHost", queryFailureInfo.getFailureHost().orElse(""));
+                jsonString.put("failureMessage", queryFailureInfo.getFailureMessage().orElse(""));
+                jsonString.put("failureTask", queryFailureInfo.getFailureTask().orElse(""));
+                jsonString.put("failureType", queryFailureInfo.getFailureType().orElse(""));
+                jsonString.put("failuresJson", queryFailureInfo.getFailuresJson());
+                logger.info(jsonString.toString());
+            }
+            logger.info(jsonString.toString());
+        } catch (Exception ex) {
+            jsonString.put("exception", ex.getMessage());
+            logger.info(jsonString.toString());
         }
     }
 
-    public void splitCompleted(SplitCompletedEvent splitCompletedEvent)
-    {
-        StringBuilder msg = new StringBuilder();
-
+    public void splitCompleted(SplitCompletedEvent splitCompletedEvent) {
+        JSONObject jsonString = new JSONObject();
+        jsonString.put("Logger", "QueryEventListener");
         try {
-
-            msg.append("---------------Split Completed----------------------------");
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Query ID: ");
-            msg.append(splitCompletedEvent.getQueryId().toString());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Stage ID: ");
-            msg.append(splitCompletedEvent.getStageId().toString());
-            msg.append("\n");
-            msg.append("     ");
-            msg.append("Task ID: ");
-            msg.append(splitCompletedEvent.getTaskId().toString());
-
-            logger.info(msg.toString());
-
-        }
-        catch (Exception ex) {
-            logger.info(ex.getMessage());
+            jsonString.put("EventType", "SplitComplete");
+            jsonString.put("QueryId", splitCompletedEvent.getQueryId().toString());
+            jsonString.put("StageId", splitCompletedEvent.getStageId().toString());
+            jsonString.put("TaskId", splitCompletedEvent.getTaskId().toString());
+            logger.info(jsonString.toString());
+        } catch (Exception ex) {
+            jsonString.put("exception", ex.getMessage());
+            logger.info(jsonString.toString());
         }
 
     }
 
-    public void createLogFile()
-    {
-
-        SimpleDateFormat dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        String timeStamp = dateTime.format(new Date());
-        StringBuilder logPath = new StringBuilder();
-
-        logPath.append("/var/log/presto/queries-");
-        logPath.append(timeStamp);
-        logPath.append(".%g.log");
-
-        try {
-            logger = Logger.getLogger(loggerName);
-            fh = new FileHandler(logPath.toString(), 524288000, 5, true);
-            logger.addHandler(fh);
-            logger.setUseParentHandlers(false);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-        }
-        catch (IOException e) {
-            logger.info(e.getMessage());
-        }
+    public void createLogger() {
+        logger = Logger.getLogger(QueryEventListener.class.getName());
     }
-
 }

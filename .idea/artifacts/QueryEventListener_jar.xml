@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="QueryEventListener:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/QueryEventListener</output-path>
+    <root id="archive" name="QueryEventListener.jar">
+      <element id="file-copy" path="$PROJECT_DIR$/pom.xml" />
+      <element id="directory" name="META-INF">
+        <element id="dir-copy" path="$PROJECT_DIR$/META-INF" />
+      </element>
+      <element id="module-output" name="QueryEventListener" />
+    </root>
+  </artifact>
+</component>
