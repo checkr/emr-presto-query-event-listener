@@ -77,7 +77,8 @@ public class QueryEventListener implements EventListener {
             if(queryCompletedEvent.getStatistics().getDistributedPlanningTime().isPresent()) {
                 jsonString.put("DistributedPlanningTime", queryCompletedEvent.getStatistics().getDistributedPlanningTime().get().toMillis());
             }
-            jsonString.put("PeakMemoryBytes", queryCompletedEvent.getStatistics().getPeakMemoryBytes());
+            jsonString.put("PeakUserMemoryBytes", queryCompletedEvent.getStatistics().getPeakUserMemoryBytes());
+            jsonString.put("PeakTotalNonRevocableMemoryBytes", queryCompletedEvent.getStatistics().getPeakTotalNonRevocableMemoryBytes());
             jsonString.put("TotalBytes", queryCompletedEvent.getStatistics().getTotalBytes());
             jsonString.put("TotalRows", queryCompletedEvent.getStatistics().getTotalRows());
             jsonString.put("CompletedSplits", queryCompletedEvent.getStatistics().getCompletedSplits());
@@ -115,6 +116,7 @@ public class QueryEventListener implements EventListener {
     }
 
     public void createLogger() {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s %n");
         logger = Logger.getLogger(QueryEventListener.class.getName());
     }
 }
